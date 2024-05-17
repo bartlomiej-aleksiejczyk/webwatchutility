@@ -24,6 +24,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      DJANGO_SETTINGS_MODULE: "webwatchutility.settings"
       DJANGO_SECRET_KEY: "your-secret-key-here"
       DEBUG: "True"
       POSTGRES_DB: webwatchdb

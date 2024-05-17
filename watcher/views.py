@@ -1,21 +1,31 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 from .tasks import make_request
-from myproject.celery import app
+from webwatchutility.celery import app
 
 def set_periodic_task(request):
-    endpoint = request.GET.get('endpoint')
-    interval = request.GET.get('interval', type=int)
-    if endpoint and interval:
-        # Here you can adjust the periodic task setting
-        # This is a placeholder: you need to properly handle periodic tasks
-        app.conf.beat_schedule = {
-            'make_request_every_interval': {
-                'task': 'myapp.tasks.make_request',
-                'schedule': interval,
-                'args': (endpoint,),
-            },
-        }
-        return JsonResponse({'status': 'scheduled', 'endpoint': endpoint, 'interval': interval})
-    else:
-        return JsonResponse({'error': 'Invalid parameters'}, status=400)
+    if request.method == 'POST':
+        endpoint = request.POST.get('endpoint')
+        interval = request.POST.get('interval')
+
+        try:
+            if endpoint and interval:
+                interval = int(interval)
+
+                task_name = f"make_request_{endpoint.replace('.', '_')}_{interval}"
+
+                app.conf.beat_schedule[task_name] = {
+                    'task': 'watcher.tasks.make_request',
+                    'schedule': interval,
+                    'args': (endpoint,),
+                }
+                return HttpResponse(f"Task {task_name} scheduled successfully.")
+            else:
+                raise ValueError("Endpoint or interval is missing.")
+        except ValueError as e:
+            return HttpResponse(str(e), status=400)
+
+    tasks = app.conf.beat_schedule
+    return render(request, 'task_status.html', {'tasks': tasks})
+

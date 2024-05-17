@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'watcher',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +52,7 @@ ROOT_URLCONF = 'webwatchutility.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,8 +67,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'webwatchutility.wsgi.application'
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')  # Default value for development
-DEBUG = os.getenv('DEBUG', 'False') == 'True'  # Ensures proper boolean conversion
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-secret-key')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 DATABASES = {
     'default': {
