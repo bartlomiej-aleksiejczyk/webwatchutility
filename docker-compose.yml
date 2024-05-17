@@ -8,12 +8,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    restart: always # Ensure the database restarts automatically
+      - /var/lib/postgresql/data
+    restart: always
 
   redis:
     image: redis:alpine
-    restart: always # Ensure Redis restarts automatically
+    restart: always
 
   web:
     build: .
@@ -64,6 +64,3 @@ services:
     depends_on:
       - web
       - redis
-
-volumes:
-  postgres_data:
