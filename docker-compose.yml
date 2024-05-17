@@ -1,0 +1,69 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: webwatchdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always # Ensure the database restarts automatically
+
+  redis:
+    image: redis:alpine
+    restart: always # Ensure Redis restarts automatically
+
+  web:
+    build: .
+    command: >
+      sh -c "python wait_for_db.py &&
+            python manage.py migrate --noinput &&
+            python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SECRET_KEY: "your-secret-key-here"
+      DEBUG: "True"
+      POSTGRES_DB: webwatchdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    command: celery -A webwatchutility worker --loglevel=info
+    volumes:
+      - .:/code
+    environment:
+      DJANGO_SECRET_KEY: "your-secret-key-here"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    depends_on:
+      - web
+      - redis
+
+  beat:
+    build: .
+    command: celery -A webwatchutility beat --loglevel=info
+    volumes:
+      - .:/code
+    environment:
+      DJANGO_SECRET_KEY: "your-secret-key-here"
+      CELERY_BROKER_URL: "redis://redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://redis:6379/0"
+    depends_on:
+      - web
+      - redis
+
+volumes:
+  postgres_data:
