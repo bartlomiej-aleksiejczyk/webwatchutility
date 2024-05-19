@@ -17,6 +17,7 @@ services:
     build: .
     command: >
       sh -c "python wait_for_db.py &&
+            python manage.py makemigrations --noinput &&
             python manage.py migrate --noinput &&
             python manage.py runserver 0.0.0.0:8000"
     volumes:
@@ -24,9 +25,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DJANGO_SETTINGS_MODULE: "webwatchutility.settings"
+      DJANGO_SETTINGS_MODULE: "core.settings"
       DJANGO_SECRET_KEY: "your-secret-key-here"
       DEBUG: "True"
+      ALLOWED_HOSTS: "localhost,192.168.0.29"
       POSTGRES_DB: webwatchdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -40,7 +42,7 @@ services:
 
   celery:
     build: .
-    command: celery -A webwatchutility worker --loglevel=info
+    command: celery -A core worker --loglevel=debug
     volumes:
       - .:/code
     environment:
@@ -53,7 +55,7 @@ services:
 
   beat:
     build: .
-    command: celery -A webwatchutility beat --loglevel=info
+    command: celery -A core beat --loglevel=debug
     volumes:
       - .:/code
     environment:

@@ -1,13 +1,18 @@
-{% extends "base.html" %} {% block title %} Schedule Task {% endblock %} {%
-block content %}
+{% extends "base.html" %}
+{% block title %} Schedule Task {% endblock %}
+{% block content %}
 <article>
   <h1>Schedule a New Task</h1>
   <form action="" method="post">
     {% csrf_token %}
     <label for="endpoint">Endpoint:</label>
     <input type="text" id="endpoint" name="endpoint" required /><br /><br />
-    <label for="interval">Interval (in seconds):</label>
-    <input type="number" id="interval" name="interval" required /><br /><br />
+    <label for="interval">Interval:</label>
+    <select id="interval" name="interval">
+      {% for key, value in interval_choices %}
+      <option value="{{ key }}">{{ value }}</option>
+      {% endfor %}
+    </select><br /><br />
     <button type="submit">Schedule Task</button>
   </form>
 </article>
@@ -15,14 +20,13 @@ block content %}
 <h2>Current Scheduled Tasks</h2>
 {% if tasks %}
 <ul>
-  {% for task, details in tasks.items %}
+  {% for task in tasks %}
   <li>
-    {{ task }}: Every {{ details.schedule }} seconds to {{ details.args.0 }}
+    {{ task.endpoint }}: Every {{ task.get_interval_display }} - Last run: {{ task.last_run }}
   </li>
   {% endfor %}
 </ul>
 {% else %}
 <p>No tasks scheduled.</p>
-{% endif %} {% if error %}
-<p style="color: red">{{ error }}</p>
-{% endif %} {% endblock %}
+{% endif %}
+{% endblock %}

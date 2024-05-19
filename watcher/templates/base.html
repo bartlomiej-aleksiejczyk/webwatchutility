@@ -3,14 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://unpkg.com/missing.css@1.1.1" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/main-override.css' %}" />
     <title>{% block title %}My Site{% endblock %}</title>
   </head>
   <body>
-    <main class="container">
-      {% block content %}
-      <!-- Content will be injected here -->
-      {% endblock %}
-    </main>
+    <main class="container">{% block content %} {% endblock %}</main>
   </body>
 </html>
