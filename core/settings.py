@@ -91,7 +91,7 @@ CELERY_TIMEZONE = 'UTC'
 CELERY_BEAT_SCHEDULE = {
     'check_5min_tasks': {
         'task': 'watcher.tasks.check_scheduled_tasks',
-        'schedule': crontab(minute='*/5'),
+        'schedule': 10.0,
         'args': ('5min',),
     },
     'check_15min_tasks': {
