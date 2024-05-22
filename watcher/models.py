@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.fields import ArrayField
 
 import enum
 
@@ -17,6 +18,15 @@ class IntervalChoices(enum.Enum):
     def choices(cls):
         return [(key.value, key.name.replace("_", " ").title()) for key in cls]
 
+class ProcessingStrategyChoices(enum.Enum):
+    CLASS_SELECTOR = 'class_selector'
+    JSON_SCRIPT = 'json_script'
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name.replace("_", " ").title()) for key in cls]
+
+
 class ScheduledTask(models.Model):
     endpoint = models.URLField()
     interval = models.CharField(max_length=10, choices=IntervalChoices.choices())
@@ -24,6 +34,8 @@ class ScheduledTask(models.Model):
     latest_response = models.TextField(null=True, blank=True)
     last_successful = models.BooleanField(default=True) 
     error_message = models.TextField(null=True, blank=True)
-    
+    processing_strategy = models.CharField(max_length=50, choices=ProcessingStrategyChoices.choices(), blank=True, null=True)
+    additional_params = ArrayField(models.CharField(max_length=255), blank=True, null=True)
+
     def __str__(self):
         return f"{self.endpoint} ({self.get_interval_display()})"

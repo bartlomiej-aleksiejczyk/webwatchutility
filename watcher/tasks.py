@@ -1,6 +1,7 @@
 from celery import shared_task
 from django.utils import timezone
 from .models import ScheduledTask, IntervalChoices
+from .processing_strategies import ProcessingStrategy, ClassSelectorStrategy, JSONScriptStrategy
 import requests
 import random
 
@@ -37,14 +38,29 @@ def execute_grouped_tasks(task_ids):
     for task in tasks:
         make_request.apply_async(args=[task.endpoint], link=process_task_result.s(task.id))
 
+
 @shared_task
 def process_task_result(task_response, task_id):
     task = ScheduledTask.objects.get(id=task_id)
-    task.latest_response = task_response.result
     task.last_run = timezone.now()
+    task.latest_response = None  
+
+    if task.processing_strategy:
+        strategy_cls = globals().get(task.processing_strategy)
+        if strategy_cls:
+            strategy = strategy_cls()
+            try:
+                processed_data = strategy.process(task_response, *task.additional_params)
+                task.latest_response = processed_data
+                task.last_successful = True
+            except Exception as e:
+                task.last_successful = False
+                task.error_message = str(e)
+
     task.save()
-    print(f'Response for task {task.id} processed and saved.')
+    print(f'Response for task {task.id} processed: {"Success" if task.last_successful else "Failed"}')
     schedule_next_run(task)
+
 
 def schedule_next_run(task):
     interval_seconds = {

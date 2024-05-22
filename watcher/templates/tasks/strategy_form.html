@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Create Task - {{ strategy_name|title }}{% endblock %}
+
+{% block content %}
+<article>
+  <h1>Create Task - {{ strategy_name|title }}</h1>
+  <form action="" method="post">
+    {% csrf_token %}
+    <label for="endpoint">Endpoint:</label>
+    <input type="text" id="endpoint" name="endpoint" required /><br /><br />
+    <label for="interval">Interval:</label>
+    <select id="interval" name="interval">
+      {% for key, value in interval_choices %}
+      <option value="{{ key }}">{{ value }}</option>
+      {% endfor %}
+    </select><br /><br />
+    
+    {% include 'tasks/fragments/'|add:strategy_name|add:'_form.html' %}
+    
+    <button type="submit">Create Task</button>
+  </form>
+</article>
+{% endblock %}
