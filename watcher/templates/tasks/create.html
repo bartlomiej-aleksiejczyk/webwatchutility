@@ -8,8 +8,8 @@
     <label for="strategy">Processing Strategy:</label>
     <select id="strategy" name="strategy">
       <option value="">Select a Strategy</option>
-      {% for key, value in strategy_choices %}
-      <option value="{{key}}">{{ value }}</option>
+      {% for value, description in strategy_choices %}
+      <option value="{{ value }}">{{ description }}</option>
       {% endfor %}
     </select><br /><br />
     <button type="submit">Next</button>

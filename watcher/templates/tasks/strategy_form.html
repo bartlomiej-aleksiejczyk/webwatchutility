@@ -11,8 +11,8 @@
     <input type="text" id="endpoint" name="endpoint" required /><br /><br />
     <label for="interval">Interval:</label>
     <select id="interval" name="interval">
-      {% for key, value in interval_choices %}
-      <option value="{{ key }}">{{ value }}</option>
+      {% for value, description in strategy_choices %}
+      <option value="{{ value }}">{{ description }}</option>
       {% endfor %}
     </select><br /><br />
     

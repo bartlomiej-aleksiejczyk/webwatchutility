@@ -6,6 +6,8 @@ from .models import ScheduledTask, IntervalChoices
 from .services import fetch_and_group_tasks_by_domain
 import requests
 import random
+from .processing_strategies import ProcessingStrategyChoices
+
 
 logger = get_task_logger(__name__)
 
@@ -58,27 +60,23 @@ def process_task_result(task_response, task_id):
         logger.error(f'Task with id {task_id} does not exist.')
         return
 
-    task.last_run = timezone.now()
-    task.latest_response = None
-
-    if task.processing_strategy:
-        strategy_cls = globals().get(task.processing_strategy)
-        if strategy_cls:
-            strategy = strategy_cls()
-            try:
-                processed_data = strategy.process(task_response, *task.additional_params)
-                task.latest_response = processed_data
-                task.last_successful = True
-            except Exception as e:
-                task.last_successful = False
-                task.error_message = str(e)
-                logger.error(f'Error processing task {task.id}: {str(e)}')
+    strategy_class = ProcessingStrategyChoices.get_strategy_class(task.processing_strategy)
+    strategy = strategy_class()
+    try:
+        processed_data = strategy.process(task_response, *task.additional_params)
+        task.latest_response = processed_data
+        task.last_successful = True
+    except Exception as e:
+        task.last_successful = False
+        task.error_message = str(e)
+        logger.error(f'Error processing task {task.id}: {str(e)}')
 
     try:
         task.save()
     except DatabaseError as e:
         logger.error(f'Failed to save task {task.id} after processing: {str(e)}')
         raise
+
     logger.info(f'Response for task {task.id} processed: {"Success" if task.last_successful else "Failed"}')
 
 def schedule_next_run(task, remaining_task_ids):

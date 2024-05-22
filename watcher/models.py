@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
-
+from .processing_strategies import ProcessingStrategyChoices
 import enum
 
 class IntervalChoices(enum.Enum):
@@ -34,7 +34,12 @@ class ScheduledTask(models.Model):
     latest_response = models.TextField(null=True, blank=True)
     last_successful = models.BooleanField(default=True) 
     error_message = models.TextField(null=True, blank=True)
-    processing_strategy = models.CharField(max_length=50, choices=ProcessingStrategyChoices.choices(), blank=True, null=True)
+    processing_strategy = models.CharField(
+        max_length=50,
+        choices=ProcessingStrategyChoices.choices(),
+        blank=True,
+        null=True
+    )
     additional_params = ArrayField(models.CharField(max_length=255), blank=True, null=True)
 
     def __str__(self):

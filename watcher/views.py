@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .services import create_scheduled_task
-from .models import IntervalChoices, ProcessingStrategyChoices
+from .models import IntervalChoices
+from .processing_strategies import ProcessingStrategyChoices
+
 
 def create_task(request):
     if request.method == 'POST':
@@ -11,7 +13,10 @@ def create_task(request):
 
     interval_choices = IntervalChoices.choices()
     strategy_choices = ProcessingStrategyChoices.choices()
-    return render(request, 'tasks/create.html', {'interval_choices': interval_choices, 'strategy_choices': strategy_choices})
+    return render(request, 'tasks/create.html', {
+        'interval_choices': interval_choices,
+        'strategy_choices': strategy_choices
+    })
 
 def strategy_form(request, strategy_name):
     if request.method == 'POST':

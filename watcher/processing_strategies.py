@@ -1,5 +1,7 @@
 import json
 from bs4 import BeautifulSoup
+import enum
+
 
 class ProcessingStrategy:
     """ Base class for different processing strategies. """
@@ -20,3 +22,25 @@ class JSONScriptStrategy(ProcessingStrategy):
         script = soup.find('script', {'id': '__NEXT_DATA__', 'type': 'application/json'})
         data = json.loads(script.text)
         return data['props']['pageProps']['data']['recommendedOffers']['groupedOffers']
+
+class ProcessingStrategyChoices(enum.Enum):
+    CLASS_SELECTOR = ('class_selector', 'Extracts elements with a specific CSS class using BeautifulSoup.', ClassSelectorStrategy)
+    JSON_SCRIPT = ('json_script', 'Parses JSON from a <script> tag and extracts specific data.', JSONScriptStrategy)
+
+    def __new__(cls, value, description, strategy_class):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.description = description
+        obj.strategy_class = strategy_class
+        return obj
+
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.description) for key in cls]
+
+    @classmethod
+    def get_strategy_class(cls, value):
+        for item in cls:
+            if item.value == value:
+                return item.strategy_class
+        raise ValueError(f"No strategy class found for value: {value}")
