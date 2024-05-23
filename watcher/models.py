@@ -37,6 +37,7 @@ class ScheduledTask(models.Model):
     additional_params = ArrayField(
         models.CharField(max_length=255), blank=True, null=True
     )
+    is_enabled = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.endpoint} ({self.get_interval_display()})"
