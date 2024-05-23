@@ -1,5 +1,5 @@
 from django.db import DatabaseError
-from .models import ScheduledTask
+from ..models import ScheduledTask
 
 
 def create_scheduled_task(endpoint, interval, strategy, additional_params):
@@ -16,7 +16,7 @@ def create_scheduled_task(endpoint, interval, strategy, additional_params):
 
 
 def fetch_and_group_tasks_by_domain(interval):
-    from .tasks import execute_grouped_tasks
+    from ..tasks import execute_grouped_tasks
 
     tasks = ScheduledTask.objects.filter(interval=interval)
     grouped_tasks = {}
