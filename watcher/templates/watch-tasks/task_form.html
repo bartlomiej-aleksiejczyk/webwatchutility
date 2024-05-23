@@ -11,8 +11,7 @@
       <br />
       <label for="interval">Interval:</label>
       <select id="interval" name="interval">
-        {% for key, value in interval_choices %}<option value="{{ key }}">{{ value }}</option>{% endfor %}prbuje
-        
+        {% for key, value in interval_choices %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
       </select>
       <br />
       <br />
@@ -20,4 +19,4 @@
       <button type="submit">Create Task</button>
     </form>
   </article>
-{% endblock %}
+{% endblock content %}
