@@ -18,7 +18,7 @@ def create_scheduled_task(endpoint, interval, strategy, additional_params):
 def fetch_and_group_tasks_by_domain(interval):
     from ..tasks import execute_grouped_tasks
 
-    tasks = ScheduledTask.objects.filter(interval=interval)
+    tasks = ScheduledTask.objects.filter(interval=interval, is_enabled=True)
     grouped_tasks = {}
     for task in tasks:
         domain = task.endpoint.split("/")[2]
