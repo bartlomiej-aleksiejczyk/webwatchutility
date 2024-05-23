@@ -3,7 +3,7 @@ import enum
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
-from .processing_strategies import ProcessingStrategyChoices
+from .content_extraction_strategies import ContentProcessingStrategies
 
 
 class IntervalChoices(enum.Enum):
@@ -30,7 +30,7 @@ class ScheduledTask(models.Model):
     error_message = models.TextField(null=True, blank=True)
     processing_strategy = models.CharField(
         max_length=50,
-        choices=ProcessingStrategyChoices.choices(),
+        choices=ContentProcessingStrategies.choices(),
         blank=True,
         null=True,
     )

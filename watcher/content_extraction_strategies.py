@@ -32,7 +32,7 @@ class JSONScriptStrategy(ProcessingStrategy):
         return data["props"]["pageProps"]["data"]["recommendedOffers"]["groupedOffers"]
 
 
-class ProcessingStrategyChoices(enum.Enum):
+class ContentProcessingStrategies(enum.Enum):
     CLASS_SELECTOR = (
         "class_selector",
         "Extracts elements with a specific CSS class using BeautifulSoup.",
