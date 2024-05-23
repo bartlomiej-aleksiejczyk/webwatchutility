@@ -11,7 +11,11 @@
                 <i> {{ strategy_description }} </i>
             </div>
         </p>
-        <p>Was successfull last time: {{ task.last_successful }}</p>
+        <p>
+            Was successfull last time:
+            {% load common_tags %}
+            {% boolean_span task.last_successful %}
+        </p>
         <p>
             <form action="{% url 'toggle_task_enabled' task.id %}" method="post">
                 {% csrf_token %}
