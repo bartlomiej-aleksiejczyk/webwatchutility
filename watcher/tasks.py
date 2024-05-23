@@ -68,19 +68,25 @@ def process_task_result(task_response, task_id):
     except ScheduledTask.DoesNotExist:
         logger.error(f"Task with id {task_id} does not exist.")
         return
-
-    strategy_class = ContentProcessingStrategies.get_strategy_class(
-        task.processing_strategy
-    )
-    strategy = strategy_class()
     try:
-        processed_data = strategy.process(task_response, *task.additional_params)
-        task.latest_response = processed_data
-        task.last_successful = True
-    except Exception as e:
+        strategy_class = ContentProcessingStrategies.get_strategy_class(
+            task.processing_strategy
+        )
+        strategy = strategy_class()
+
+    except ValueError as e:
         task.last_successful = False
         task.error_message = str(e)
         logger.error(f"Error processing task {task.id}: {str(e)}")
+    if strategy:
+        try:
+            processed_data = strategy.process(task_response, *task.additional_params)
+            task.latest_response = processed_data
+            task.last_successful = True
+        except Exception as e:
+            task.last_successful = False
+            task.error_message = str(e)
+            logger.error(f"Error processing task {task.id}: {str(e)}")
 
     try:
         task.save()
