@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from .domain.services import create_scheduled_task
-from .models import IntervalChoices
+from .models import IntervalChoices, ScheduledTask
 from .domain.content_extraction_strategies import ContentProcessingStrategies
 from .slug_transformers import dashify, deslugify
 
@@ -47,3 +50,44 @@ def schedule_task(request, strategy_name):
         "watch-tasks/task_form.html",
         {"strategy_name": strategy_name_original, "interval_choices": interval_choices},
     )
+
+
+def list_tasks(request):
+    task_list = ScheduledTask.objects.all().order_by('created_at')
+    paginator = Paginator(task_list, 10)
+
+    page = request.GET.get("page")
+    try:
+        tasks = paginator.page(page)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
+    except EmptyPage:
+        tasks = paginator.page(paginator.num_pages)
+
+    return render(request, "watch-tasks/list_tasks.html", {"tasks": tasks})
+
+
+def task_delete(request, pk):
+    task = get_object_or_404(ScheduledTask, pk=pk)
+    if request.method == "POST":
+        task.delete()
+        return redirect("list_tasks")
+    return render(request, "watch-tasks/task_confirm_delete.html", {"task": task})
+
+
+def toggle_task_enabled(request, pk):
+    task = get_object_or_404(ScheduledTask, pk=pk)
+    if request.method == "POST":
+        task.is_enabled = not task.is_enabled
+        task.save()
+
+        return HttpResponseRedirect(
+            request.META.get("HTTP_REFERER", reverse("list_tasks"))
+        )
+
+    return redirect("task_list")
+
+
+def task_detail(request, pk):
+    task = get_object_or_404(ScheduledTask, pk=pk)
+    return render(request, "watch-tasks/task_detail.html", {"task": task})

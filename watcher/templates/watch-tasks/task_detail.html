@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    <article>
+        <h1>Task Details - {{ task }}</h1>
+        <p>Endpoint: {{ task.endpoint }}</p>
+        <p>Interval: {{ task.get_interval_display }}</p>
+        <p>
+            <form action="{% url 'toggle_task_enabled' task.id %}" method="post">
+                {% csrf_token %}
+                <label>
+                    Enabled:
+                    <input type="checkbox"
+                           name="is_enabled"
+                           onchange="this.form.submit()"
+                           {% if task.is_enabled %}checked{% endif %}>
+                </label>
+            </form>
+        </p>
+        <p>
+            <a href="{% url 'task_delete' task.id %}">Delete Task</a>
+        </p>
+    </article>
+{% endblock content %}

@@ -6,6 +6,8 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}" />
     <link rel="stylesheet" href="{% static 'css/main-override.css' %}" />
+    {% block extracss %}
+    {% endblock extracss %}
     <title>
       {% block title %}
         My Site
@@ -17,5 +19,7 @@
       {% block content %}
       {% endblock content %}
     </main>
+    {% block extrajs %}
+    {% endblock extrajs %}
   </body>
 </html>
