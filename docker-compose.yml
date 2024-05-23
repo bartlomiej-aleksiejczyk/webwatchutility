@@ -19,6 +19,7 @@ services:
       sh -c "python wait_for_db.py &&
             python manage.py makemigrations --noinput &&
             python manage.py migrate --noinput &&
+            python create_superuser.py &&
             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
@@ -42,7 +43,7 @@ services:
 
   celery:
     build: .
-    command: celery -A core worker --loglevel=debug
+    command: celery -A core worker --loglevel=info
     volumes:
       - .:/code
     environment:
@@ -55,10 +56,13 @@ services:
 
   beat:
     build: .
-    command: celery -A core beat --loglevel=debug
+    command: celery -A core beat --loglevel=info
     volumes:
       - .:/code
     environment:
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_PASSWORD: admin
+      DJANGO_SUPERUSER_EMAIL: admin@example.com
       DJANGO_SECRET_KEY: "your-secret-key-here"
       CELERY_BROKER_URL: "redis://redis:6379/0"
       CELERY_RESULT_BACKEND: "redis://redis:6379/0"
