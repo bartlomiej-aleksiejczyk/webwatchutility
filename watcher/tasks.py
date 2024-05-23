@@ -5,9 +5,9 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.db import DatabaseError
 from .models import ScheduledTask, IntervalChoices
-from .services import fetch_and_group_tasks_by_domain
+from .domain.services import fetch_and_group_tasks_by_domain
 
-from .content_extraction_strategies import ContentProcessingStrategies
+from .domain.content_extraction_strategies import ContentProcessingStrategies
 
 
 logger = get_task_logger(__name__)

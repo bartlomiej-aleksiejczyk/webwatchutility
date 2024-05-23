@@ -1,4 +1,4 @@
-from .content_extraction_strategies import ContentProcessingStrategies
+from .domain.content_extraction_strategies import ContentProcessingStrategies
 
 
 def dashify(text):
