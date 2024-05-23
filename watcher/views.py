@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-from .services import create_scheduled_task
+from .domain.services import create_scheduled_task
 from .models import IntervalChoices
-from .content_extraction_strategies import ContentProcessingStrategies
+from .domain.content_extraction_strategies import ContentProcessingStrategies
 from .slug_transformers import dashify, deslugify
 
 
