@@ -10,6 +10,7 @@ from .domain.content_extraction_strategies import ContentProcessingStrategies
 from .slug_transformers import dashify, deslugify
 
 
+# TODO: Comeback button
 def choose_strategy(request):
     if request.method == "POST":
         strategy = request.POST.get("strategy")

@@ -16,6 +16,18 @@
     </title>
   </head>
   <body>
+    <nav class="navbar">
+      {% block navbar %}
+        <ul class="navbar__list">
+          <li class="navbar__item">
+            <a class="navbar__link" href="{% url 'choose_strategy' %}">Choose Strategy</a>
+          </li>
+          <li class="navbar__item">
+            <a class="navbar__link" href="{% url 'list_tasks' %}">List Tasks</a>
+          </li>
+        </ul>
+      {% endblock navbar %}
+    </nav>
     <main class="container">
       {% block content %}
       {% endblock content %}
