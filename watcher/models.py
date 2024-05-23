@@ -1,9 +1,10 @@
 import enum
 
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
-from .content_extraction_strategies import ContentProcessingStrategies
+from .domain.content_extraction_strategies import ContentProcessingStrategies
 
 
 class IntervalChoices(enum.Enum):
@@ -38,6 +39,7 @@ class ScheduledTask(models.Model):
         models.CharField(max_length=255), blank=True, null=True
     )
     is_enabled = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=False, default=timezone.now)
 
     def __str__(self):
-        return f"{self.endpoint} ({self.get_interval_display()})"
+        return f"{self.endpoint})"
