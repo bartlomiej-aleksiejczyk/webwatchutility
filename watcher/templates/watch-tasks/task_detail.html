@@ -5,14 +5,23 @@
         <p>Endpoint: {{ task.endpoint }}</p>
         <p>Interval: {{ task.get_interval_display }}</p>
         <p>
+            Strategy:
+            <b>{{ task.processing_strategy }}: </b>
+            <div>
+                <i> {{ strategy_description }} </i>
+            </div>
+        </p>
+        <p>Was successfull last time: {{ task.last_successful }}</p>
+        <p>
             <form action="{% url 'toggle_task_enabled' task.id %}" method="post">
                 {% csrf_token %}
-                <label>
-                    Enabled:
+                <span>Enabled:</span>
+                <label class="switch">
                     <input type="checkbox"
                            name="is_enabled"
                            onchange="this.form.submit()"
                            {% if task.is_enabled %}checked{% endif %}>
+                    <span class="slider"></span>
                 </label>
             </form>
         </p>

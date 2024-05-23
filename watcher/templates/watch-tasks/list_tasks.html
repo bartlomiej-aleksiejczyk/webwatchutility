@@ -1,72 +1,4 @@
 {% extends "base.html" %}
-{% block extracss %}
-    <style>
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 26px;
-  background-color: #ccc;
-  border-radius: 4px;
-  transition: background-color 0.4s;
-}
-
-.switch input { 
-  display: none;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 4px;
-  box-shadow: 0 0 1px #2196F3;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 22px;
-  width: 22px;
-  left: 2px;
-  bottom: 2px;
-  background-color: white;
-  transition: 0.4s;
-  border-radius: 4px;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:checked + .slider:before {
-  transform: translateX(34px);
-}
-
-.slider:after {
-  content: "ON";
-  color: white;
-  display: block;
-  position: absolute;
-  transform: translateX(-50%) translateY(-50%);
-  top: 50%;
-  left: 75%;
-  font-size: 16px;
-  font-weight: 500;
-  font-family: Verdana, sans-serif;
-}
-
-input:checked + .slider:after {
-  content: "OFF";
-  left: 28%;
-}
-    </style>
-{% endblock extracss %}
 {% block content %}
     <article>
         <h1>List of Scheduled Tasks</h1>
@@ -75,6 +7,7 @@ input:checked + .slider:after {
                 <tr>
                     <th>Task</th>
                     <th>Interval</th>
+                    <th>Was successfull:</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -85,6 +18,10 @@ input:checked + .slider:after {
                             <a href="{% url 'task_detail' task.id %}">{{ task }}</a>
                         </td>
                         <td>{{ task.get_interval_display }}</td>
+                        <td>
+                            {% load common_tags %}
+                            {% boolean_span task.last_successful %}
+                        </td>
                         <td>
                             <form action="{% url 'toggle_task_enabled' task.id %}"
                                   method="post"
@@ -103,7 +40,7 @@ input:checked + .slider:after {
                 {% endfor %}
             </tbody>
         </table>
-        <div class="pagination">
+        <div class="centered-element padding-high">
             <span class="step-links">
                 {% if tasks.has_previous %}
                     <a href="?page=1">&laquo; first</a>

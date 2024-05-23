@@ -53,7 +53,7 @@ def schedule_task(request, strategy_name):
 
 
 def list_tasks(request):
-    task_list = ScheduledTask.objects.all().order_by('created_at')
+    task_list = ScheduledTask.objects.all().order_by("created_at", "endpoint", "id")
     paginator = Paginator(task_list, 10)
 
     page = request.GET.get("page")
@@ -67,16 +67,16 @@ def list_tasks(request):
     return render(request, "watch-tasks/list_tasks.html", {"tasks": tasks})
 
 
-def task_delete(request, pk):
-    task = get_object_or_404(ScheduledTask, pk=pk)
+def task_delete(request, task_id):
+    task = get_object_or_404(ScheduledTask, pk=task_id)
     if request.method == "POST":
         task.delete()
         return redirect("list_tasks")
     return render(request, "watch-tasks/task_confirm_delete.html", {"task": task})
 
 
-def toggle_task_enabled(request, pk):
-    task = get_object_or_404(ScheduledTask, pk=pk)
+def toggle_task_enabled(request, task_id):
+    task = get_object_or_404(ScheduledTask, pk=task_id)
     if request.method == "POST":
         task.is_enabled = not task.is_enabled
         task.save()
@@ -88,6 +88,17 @@ def toggle_task_enabled(request, pk):
     return redirect("task_list")
 
 
-def task_detail(request, pk):
-    task = get_object_or_404(ScheduledTask, pk=pk)
-    return render(request, "watch-tasks/task_detail.html", {"task": task})
+def task_detail(request, task_id):
+    task = get_object_or_404(ScheduledTask, pk=task_id)
+    strategy_choices = {
+        choice.value: choice.description for choice in ContentProcessingStrategies
+    }
+
+    return render(
+        request,
+        "watch-tasks/task_detail.html",
+        {
+            "task": task,
+            "strategy_description": strategy_choices.get(task.processing_strategy),
+        },
+    )
