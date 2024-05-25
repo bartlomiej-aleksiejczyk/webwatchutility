@@ -8,4 +8,4 @@ class CustomUser(AbstractUser):
         ("scheduler", "Scheduler"),
         ("subscriber", "Subscriber"),
     )
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="customer")
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="subscriber")
