@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - /var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     restart: always
 
   redis:
@@ -79,3 +79,7 @@ services:
       ADMINER_DEFAULT_SERVER: db
     depends_on:
       - db
+
+volumes:
+  postgres_data:
+    driver: local
