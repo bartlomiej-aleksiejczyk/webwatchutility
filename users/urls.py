@@ -2,6 +2,7 @@ from django.urls import path
 
 # In your project's urls.py
 from django.contrib.auth import views as auth_views
+from . import views
 
 urlpatterns = [
     path("login/", auth_views.LoginView.as_view(), name="login"),
@@ -34,4 +35,5 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
+    path("register/", views.SignUpView.as_view(), name="register"),
 ]
