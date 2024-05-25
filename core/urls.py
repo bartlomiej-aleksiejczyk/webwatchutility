@@ -20,7 +20,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("accounts/", include("django.contrib.auth.urls")),
     path("watch-task/", include("watcher.urls")),
     path("users/", include("users.urls")),
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("", include("common.urls")),
 ]
