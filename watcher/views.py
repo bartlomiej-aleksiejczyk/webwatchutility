@@ -33,11 +33,12 @@ def schedule_task(request, strategy_name):
     if request.method == "POST":
         endpoint = request.POST.get("endpoint")
         interval = request.POST.get("interval")
+        name = request.POST.get("name")
         additional_params = request.POST.getlist("additional_params")
 
         if endpoint and interval and strategy_name:
             task = create_scheduled_task(
-                endpoint, interval, strategy_name_original, additional_params
+                endpoint, interval, strategy_name_original, additional_params, name
             )
             return HttpResponse(
                 f"Task for {endpoint} with strategy {strategy_name} scheduled successfully."
