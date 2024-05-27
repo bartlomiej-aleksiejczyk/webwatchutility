@@ -2,13 +2,14 @@ from django.db import DatabaseError
 from ..models import ScheduledTask
 
 
-def create_scheduled_task(endpoint, interval, strategy, additional_params):
+def create_scheduled_task(endpoint, interval, strategy, additional_params, name):
     try:
         task = ScheduledTask.objects.create(
             endpoint=endpoint,
             interval=interval,
             processing_strategy=strategy,
             additional_params=additional_params,
+            name=name,
         )
         return task
     except DatabaseError as e:
