@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
 class NotificationEmailAddress(models.Model):
 
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="communication_channels"
+        CustomUser, on_delete=models.CASCADE, related_name="notification_email_address"
     )
     email = models.EmailField()
 

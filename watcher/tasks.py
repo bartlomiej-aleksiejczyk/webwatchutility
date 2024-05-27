@@ -4,11 +4,13 @@ import requests
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.db import DatabaseError
+
+from notifications.models import NotificationPartial
+
 from .models import ScheduledTask, IntervalChoices
 from .domain.services import fetch_and_group_tasks_by_domain
-
 from .domain.content_extraction_strategies import ContentProcessingStrategies
-
+from .models import Subscription
 
 logger = get_task_logger(__name__)
 
@@ -87,7 +89,14 @@ def process_task_result(task_response, task_id):
             task.last_successful = False
             task.error_message = str(e)
             logger.error(f"Error processing task {task.id}: {str(e)}")
-
+        subscriptions = Subscription.objects.filter(scheduled_task=task)
+    for subscription in subscriptions:
+        NotificationPartial.objects.create(
+            notification_email_address=subscription.communication_text,
+            scheduled_task=task,
+            message=f"Latest update on the task you subscribed to: {processed_data}",
+        )
+    logger.info(f"Notification partials created for task {task_id}")
     try:
         task.save()
     except DatabaseError as e:

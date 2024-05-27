@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "watcher",
     "common",
     "users",
+    "notifications",
 ]
 
 MIDDLEWARE = [
@@ -91,9 +92,14 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
 
 CELERY_BEAT_SCHEDULE = {
+    "send_batch_notifications_every_hour": {
+        "task": "notifications.tasks.send_batch_notifications",
+        "schedule": 10.0,
+        # "schedule": crontab(minute=0),
+    },
     "check_5min_tasks": {
         "task": "watcher.tasks.check_scheduled_tasks",
-        "schedule": 10.0,
+        "schedule": 1000000000.0,
         "args": ("5min",),
     },
     "check_15min_tasks": {
@@ -228,6 +234,6 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.example.com")
 EMAIL_PORT = os.getenv("EMAIL_PORT", "587")
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True")
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "your-email@example.com")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "your-email@DASSDDASSDADAS.com")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER", "your-email@example.com")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "your-email-password")

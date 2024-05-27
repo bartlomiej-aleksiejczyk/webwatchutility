@@ -1,13 +1,13 @@
-from django.core.mail import send_mass_mail
+from django.core.mail import EmailMessage
 from django.db.models import Count
 from django.conf import settings
+from django.utils.html import mark_safe
+
 from celery.utils.log import get_task_logger
 from celery import shared_task
 
 from users.models import NotificationEmailAddress
-
 from .models import NotificationPartial
-
 
 logger = get_task_logger(__name__)
 
@@ -18,23 +18,27 @@ def send_batch_notifications():
         count=Count("notificationpartial")
     ).filter(count__gt=0)
 
-    messages = []
+    email_objects = []
     for email in emails_with_partials:
-        partials = NotificationPartial.objects.filter(communication_channel=email)
-        combined_message = "\n\n".join(partial.message for partial in partials)
-        messages.append(
-            (
-                f"Aggregated Updates",
-                combined_message,
-                settings.DEFAULT_FROM_EMAIL,
-                [email.email],
-            )
+        partials = NotificationPartial.objects.filter(notification_email_address=email)
+        combined_message = "<br/><hr/><br/>".join(
+            mark_safe(f"<div style='margin-bottom: 20px;'>{partial.message}</div>")
+            for partial in partials
         )
+        message = EmailMessage(
+            subject="Aggregated Updates",
+            body=combined_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[email.email],
+            headers={"Content-Type": "text/html"},
+        )
+        message.content_subtype = "html"
+        email_objects.append(message)
         partials.delete()
 
-    if messages:
-        send_mass_mail(messages, fail_silently=False)
+    if email_objects:
+        for message in email_objects:
+            message.send(fail_silently=False)
         logger.info("Batch emails sent successfully.")
-
     else:
         logger.info("No notifications to send.")

@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import NotificationPartial
 
-# Register your models here.
+
+@admin.register(NotificationPartial)
+class NotificationPartialAdmin(admin.ModelAdmin):
+    pass

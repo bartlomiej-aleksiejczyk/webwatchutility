@@ -50,14 +50,15 @@ class ScheduledTask(models.Model):
 
 
 class Subscription(models.Model):
-    communication_channel = models.ForeignKey(
+    notification_email_address = models.ForeignKey(
         NotificationEmailAddress,
         on_delete=models.CASCADE,
         related_name="subscriptions",
+        default="",
     )
     scheduled_task = models.ForeignKey(
         ScheduledTask, on_delete=models.CASCADE, related_name="subscriptions"
     )
 
     def __str__(self):
-        return f"{self.communication_channel} subscribed to {self.scheduled_task}"
+        return f"{self.notification_email_address} subscribed to {self.scheduled_task}"
