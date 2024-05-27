@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.mail import EmailMessage
 from django.db.models import Count
 from django.conf import settings
@@ -25,8 +27,17 @@ def send_batch_notifications():
             mark_safe(f"<div style='margin-bottom: 20px;'>{partial.message}</div>")
             for partial in partials
         )
+
+        if partials.exists():
+            task_name = partials.first().scheduled_task.name
+        else:
+            task_name = "No Task"
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        subject = f"{task_name} Updates - {current_datetime}"
+
         message = EmailMessage(
-            subject="Aggregated Updates",
+            subject=subject,
             body=combined_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[email.email],
