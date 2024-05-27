@@ -9,6 +9,10 @@
       <input type="text" id="endpoint" name="endpoint" required />
       <br />
       <br />
+      <label for="name">Task name:</label>
+      <input type="text" id="name" name="name" required />
+      <br />
+      <br />
       <label for="interval">Interval:</label>
       <select id="interval" name="interval">
         {% for key, value in interval_choices %}<option value="{{ key }}">{{ value }}</option>{% endfor %}
