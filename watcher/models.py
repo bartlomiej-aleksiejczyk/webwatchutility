@@ -1,9 +1,13 @@
 import enum
 
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import ArrayField
+
+from users.models import NotificationEmailAddress
+
 from .domain.content_extraction_strategies import ContentProcessingStrategies
 
 
@@ -43,3 +47,17 @@ class ScheduledTask(models.Model):
 
     def __str__(self):
         return f"{self.endpoint})"
+
+
+class Subscription(models.Model):
+    communication_channel = models.ForeignKey(
+        NotificationEmailAddress,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+    )
+    scheduled_task = models.ForeignKey(
+        ScheduledTask, on_delete=models.CASCADE, related_name="subscriptions"
+    )
+
+    def __str__(self):
+        return f"{self.communication_channel} subscribed to {self.scheduled_task}"
