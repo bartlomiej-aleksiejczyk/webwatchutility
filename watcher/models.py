@@ -44,6 +44,7 @@ class ScheduledTask(models.Model):
     )
     is_enabled = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=False, default=timezone.now)
+    name = models.CharField(max_length=255, default="default_name")
 
     def __str__(self):
         return f"{self.endpoint})"
